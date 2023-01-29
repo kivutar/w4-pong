@@ -41,7 +41,22 @@ type bar struct {
 	rigid
 }
 
-func friction(v float64, pad uint8) float64 {
+func xfriction(v float64, pad uint8) float64 {
+	if v < 0 && (pad&w4.BUTTON_LEFT == 0) {
+		v += 0.1
+		if v > 0 {
+			v = 0
+		}
+	} else if v > 0 && (pad&w4.BUTTON_RIGHT == 0) {
+		v -= 0.1
+		if v < 0 {
+			v = 0
+		}
+	}
+	return v
+}
+
+func yfriction(v float64, pad uint8) float64 {
 	if v < 0 && (pad&w4.BUTTON_UP == 0) {
 		v += 0.1
 		if v > 0 {
@@ -79,7 +94,7 @@ func (self *bar) update(pad uint8) {
 	self.y += self.yspeed
 	self.y = clamp(self.y, 0, 160-self.height)
 
-	self.yspeed = friction(self.yspeed, pad)
+	self.yspeed = yfriction(self.yspeed, pad)
 }
 
 func (self *bar) draw() {
